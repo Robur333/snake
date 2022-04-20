@@ -34,10 +34,12 @@ const boardHeight = 15;
 const boardWidth = 15;
 const boxHeight = 20;
 const boxWidth = 20;
-var randomX = getRandomBlock();
-var randomY = getRandomBlock();
-var foodX;
-var foodY;
+const snakeWidth = 19;
+const snakeHeight = 19;
+let randomX = getRandomBlock();
+let randomY = getRandomBlock();
+let foodX;
+let foodY;
 let moveID = 0;
 const movesID = [];
 let cancelled = 2;
@@ -56,7 +58,7 @@ function generateBoard() {
     x = 0;
   }
   ctx.fillStyle = 'green';
-  ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+  ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
   moveUp();
   spawnFood();
 }
@@ -71,6 +73,18 @@ function addMoveID() {
   moveID += 1;
 }
 
+function moveConsequesces(direction, callBack) {
+  moveDirection = direction;
+  addSnakeLenghtIf();
+  addMoveID();
+
+  if (snakeLenght >= 2) {
+    addTail();
+    refreshFood();
+  }
+  setTimeout(callBack, snakeRefreshRate);
+}
+
 function moveUp() {
   if (moveDirection === 'down') {
     cancelled = 4;
@@ -79,26 +93,18 @@ function moveUp() {
     if (cancelled === 2) {
       if (randomY === 0) {
         ctx.fillStyle = 'black';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
         randomY = boardHeight * boxHeight;
         ctx.fillStyle = 'green';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
       } else {
         ctx.fillStyle = 'black';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
         randomY -= 20;
         ctx.fillStyle = 'green';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
       }
-      moveDirection = 'up';
-      addSnakeLenght();
-      addMoveID();
-
-      if (snakeLenght >= 2) {
-        addTail();
-        refreshFood();
-      }
-      setTimeout(moveUp, snakeRefreshRate);
+      moveConsequesces('up', moveUp);
     } else {
       return;
     }
@@ -112,26 +118,18 @@ function moveDown() {
   if (cancelled === 4) {
     if (randomY === boardHeight * boxHeight) {
       ctx.fillStyle = 'black';
-      ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+      ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
       randomY = 0;
       ctx.fillStyle = 'green';
-      ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+      ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
     } else {
       ctx.fillStyle = 'black';
-      ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+      ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
       randomY += 20;
       ctx.fillStyle = 'green';
-      ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+      ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
     }
-    moveDirection = 'down';
-    addSnakeLenght();
-    addMoveID();
-
-    if (snakeLenght >= 2) {
-      addTail();
-      refreshFood();
-    }
-    setTimeout(moveDown, snakeRefreshRate);
+    moveConsequesces('down', moveDown);
   } else {
     return;
   }
@@ -145,27 +143,18 @@ function moveLeft() {
     if (cancelled === 1) {
       if (randomX === 0) {
         ctx.fillStyle = 'black';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
         randomX = boardHeight * boxHeight;
         ctx.fillStyle = 'green';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
       } else {
         ctx.fillStyle = 'black';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
         randomX -= 20;
         ctx.fillStyle = 'green';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
       }
-      moveDirection = 'left';
-      addSnakeLenght();
-      addMoveID();
-
-      if (snakeLenght >= 2) {
-        addTail();
-        refreshFood();
-      }
-
-      setTimeout(moveLeft, snakeRefreshRate);
+      moveConsequesces('left', moveLeft);
     } else {
       return;
     }
@@ -179,26 +168,18 @@ function moveRight() {
     if (cancelled === 3) {
       if (randomX === boardHeight * boxHeight) {
         ctx.fillStyle = 'black';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
         randomX = 0;
         ctx.fillStyle = 'green';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
       } else {
         ctx.fillStyle = 'black';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
         randomX += 20;
         ctx.fillStyle = 'green';
-        ctx.fillRect(randomX, randomY, boxWidth - 1, boxHeight - 1);
+        ctx.fillRect(randomX, randomY, snakeWidth, snakeHeight);
       }
-      moveDirection = 'right';
-      addSnakeLenght();
-      addMoveID();
-
-      if (snakeLenght >= 2) {
-        addTail();
-        refreshFood();
-      }
-      setTimeout(moveRight, snakeRefreshRate);
+      moveConsequesces('right', moveRight);
     } else {
       return;
     }
@@ -219,18 +200,18 @@ function refreshFood() {
   ctx.fillRect(foodX, foodY, boxWidth - 1, boxHeight - 1);
 }
 
-function addSnakeLenght() {
+function addSnakeLenght(addLenght) {
+  if (randomX === foodX && randomY === foodY) {
+    snakeLenght += addLenght;
+    spawnFood();
+  }
+}
+
+function addSnakeLenghtIf() {
   if (snakeLenght === 1) {
-    if (randomX === foodX && randomY === foodY) {
-      snakeLenght += 2;
-      spawnFood();
-    }
+    addSnakeLenght(2);
   } else {
-    if (randomX === foodX && randomY === foodY) {
-      snakeLenght += 1;
-      console.log(snakeLenght);
-      spawnFood();
-    }
+    addSnakeLenght(1);
   }
 }
 
